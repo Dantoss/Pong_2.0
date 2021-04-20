@@ -36,13 +36,22 @@ num_fire = 0
 rel_time = False
 
 window = display.set_mode((700, 500))
-display.set_caption("Шутер")
+display.set_caption("Пинг понг")
 background = transform.scale(image.load("galaxy.jpg"), (700, 500))
 player = Player('racket.jpeg',0, 200, 50, 120, 15)
-player2 = Player('racket.jpeg',500, 200, 50, 120, 15)
+player2 = Player('racket.jpeg',650, 200, 50, 120, 15)
+ball = GameSprite('ball.jpeg',350, 100, 50, 50, 15)
+
+speed_x = 3
+speed_y = -3
 
 font.init()
 font1 = font.SysFont('Arial', 36)
+
+won1_text = font1.render(f'Выиграл первый', 1, (255,255,255))
+won2_text = font1.render(f'Выиграл второй', 1, (255,255,255))
+
+win_height = 500
 
 game = True
 finish = False           
@@ -55,8 +64,22 @@ while game:
         player.update_left()
         player2.reset()
         player2.update_right()
+        ball.reset()
+        ball.update()
         clock.tick(FPS)
-        
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+        if ball.rect.x >= 650:
+            window.blit(won1_text,(300,300))
+            game = False
+        if ball.rect.x <= 0:
+            window.blit(won2_text,(300,300))
+            game = False
+        if ball.rect.y > win_height or ball.rect.y < 0:
+            speed_y *= -1
+
+        if sprite.collide_rect(player , ball) or sprite.collide_rect(player2 , ball): 
+            speed_x *= -1
         # lost_text = font1.render(f'Пропущено: {lost}', 1, (255,255,255))
         # kill_text = font1.render(f'Убито: {killed}', 1, (255,255,255))
         # reload_text = font1.render('ПЕРЕЗАРЯДКА', 1, (255,255,255))
